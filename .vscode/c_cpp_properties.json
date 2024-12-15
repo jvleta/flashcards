@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${default}"
+            ],
+            "defines": [],
+            "macFrameworkPath": [
+                "/Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/System/Library/Frameworks"
+            ],
+            "cStandard": "c17",
+            "compilerPath": "/opt/homebrew/opt/llvm/bin/clang++"
+        }
+    ],
+    "version": 4
+}
