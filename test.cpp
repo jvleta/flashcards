@@ -16,31 +16,30 @@ protected:
   void SetUp() override {
     // Set up a valid Card instance
     card.id = "Test Card GUID";
-    card.front = {"Front Header", "Front Main", "Front Footer"};
-    card.back = {"Back Header", "Back Main", "Back Footer"};
+    card.front.lines = {"Front Line 1", "Front Line 2", "Front Line 3"};
+    card.back.lines = {"Back Line 1", "Back Line 2"};
 
     // Set up a matching JSON representation
-    valid_json = json{{"id", "Test Card GUID"},
-                      {"front",
-                       {{"header", "Front Header"},
-                        {"main", "Front Main"},
-                        {"footer", "Front Footer"}}},
-                      {"back",
-                       {{"header", "Back Header"},
-                        {"main", "Back Main"},
-                        {"footer", "Back Footer"}}}};
+    valid_json =
+        json{{"id", "Test Card GUID"},
+             {"front",
+              {{"lines", {"Front Line 1", "Front Line 2", "Front Line 3"}}}},
+             {"back", {{"lines", {"Back Line 1", "Back Line 2"}}}}};
   }
 };
 
 TEST_F(CardTest, DeserializeValidJSON) {
   Card parsed_card = valid_json.get<Card>();
   EXPECT_EQ(parsed_card.id, card.id);
-  EXPECT_EQ(parsed_card.front.header, card.front.header);
-  EXPECT_EQ(parsed_card.front.main, card.front.main);
-  EXPECT_EQ(parsed_card.front.footer, card.front.footer);
-  EXPECT_EQ(parsed_card.back.header, card.back.header);
-  EXPECT_EQ(parsed_card.back.main, card.back.main);
-  EXPECT_EQ(parsed_card.back.footer, card.back.footer);
+  EXPECT_EQ(parsed_card.front.lines.size(), card.front.lines.size());
+  EXPECT_EQ(parsed_card.back.lines.size(), card.back.lines.size());
+
+  for (size_t i = 0; i < card.front.lines.size(); ++i) {
+    EXPECT_EQ(parsed_card.front.lines[i], card.front.lines[i]);
+  }
+  for (size_t i = 0; i < card.back.lines.size(); ++i) {
+    EXPECT_EQ(parsed_card.back.lines[i], card.back.lines[i]);
+  }
 }
 
 TEST_F(CardTest, SerializeToJSON) {
@@ -55,17 +54,20 @@ TEST_F(CardTest, RoundTripSerialization) {
 
   // Ensure the parsed card matches the original
   EXPECT_EQ(parsed_card.id, card.id);
-  EXPECT_EQ(parsed_card.front.header, card.front.header);
-  EXPECT_EQ(parsed_card.front.main, card.front.main);
-  EXPECT_EQ(parsed_card.front.footer, card.front.footer);
-  EXPECT_EQ(parsed_card.back.header, card.back.header);
-  EXPECT_EQ(parsed_card.back.main, card.back.main);
-  EXPECT_EQ(parsed_card.back.footer, card.back.footer);
+  EXPECT_EQ(parsed_card.front.lines.size(), card.front.lines.size());
+  EXPECT_EQ(parsed_card.back.lines.size(), card.back.lines.size());
+
+  for (size_t i = 0; i < card.front.lines.size(); ++i) {
+    EXPECT_EQ(parsed_card.front.lines[i], card.front.lines[i]);
+  }
+  for (size_t i = 0; i < card.back.lines.size(); ++i) {
+    EXPECT_EQ(parsed_card.back.lines[i], card.back.lines[i]);
+  }
 }
 
 TEST_F(CardTest, MissingFieldInJSON) {
   // Remove a field from the valid JSON
-  valid_json["front"].erase("footer");
+  valid_json.erase("front");
 
   // Check for exception or expected fallback behavior
   EXPECT_THROW(valid_json.get<Card>(), json::out_of_range);
@@ -78,6 +80,8 @@ TEST_F(CardTest, ExtraFieldInJSON) {
   // Ensure deserialization still works (ignoring the extra field)
   Card parsed_card = valid_json.get<Card>();
   EXPECT_EQ(parsed_card.id, card.id);
+  EXPECT_EQ(parsed_card.front.lines.size(), card.front.lines.size());
+  EXPECT_EQ(parsed_card.back.lines.size(), card.back.lines.size());
 }
 
 TEST_F(CardTest, InvalidJSON) {

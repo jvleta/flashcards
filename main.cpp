@@ -1,9 +1,12 @@
 #include "card.hpp"
 #include <CLI/CLI.hpp>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <random>
+#include <sstream>
 
+// Function to generate a GUID
 std::string generate_guid() {
   std::random_device rd;
   std::mt19937 gen(rd());
@@ -31,23 +34,23 @@ Card create_new_card() {
 
   std::cout << "Generated ID: " << new_card.id << "\n";
 
-  std::cout << "Enter front header: ";
-  std::getline(std::cin, new_card.front.header);
+  std::cout << "Enter lines for the front side (type 'DONE' to finish):\n";
+  while (true) {
+    std::string line;
+    std::getline(std::cin, line);
+    if (line == "DONE")
+      break;
+    new_card.front.lines.push_back(line);
+  }
 
-  std::cout << "Enter front main: ";
-  std::getline(std::cin, new_card.front.main);
-
-  std::cout << "Enter front footer: ";
-  std::getline(std::cin, new_card.front.footer);
-
-  std::cout << "Enter back header: ";
-  std::getline(std::cin, new_card.back.header);
-
-  std::cout << "Enter back main: ";
-  std::getline(std::cin, new_card.back.main);
-
-  std::cout << "Enter back footer: ";
-  std::getline(std::cin, new_card.back.footer);
+  std::cout << "Enter lines for the back side (type 'DONE' to finish):\n";
+  while (true) {
+    std::string line;
+    std::getline(std::cin, line);
+    if (line == "DONE")
+      break;
+    new_card.back.lines.push_back(line);
+  }
 
   return new_card;
 }
